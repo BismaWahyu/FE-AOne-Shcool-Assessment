@@ -44,10 +44,19 @@
         <v-card title="All Users">
           <v-data-table
             :headers="headers"
-            :items="users"
-            items-per-page="5"
-            dense
+            :items="userList"
+            item-value="name"
           >
+            <template v-slot:headers="{ columns }">
+              <tr>
+                <template v-for="column in columns" :key="column.key">
+                  <td>
+                    <span class="mr-2 cursor-pointer" >{{ column.title }}</span>
+                  </td>
+                </template>
+              </tr>
+            </template>
+
             <template v-slot:item="{ item }">
               <tr>
                 <td>
@@ -55,8 +64,12 @@
                     <img :src="item.avatar" alt="Avatar">
                   </v-avatar>
                 </td>
-                <td>{{ item.full_name }}</td>
+                <td>{{ item.first_name }}</td>
+                <td>{{ item.last_name }}</td>
                 <td>{{ item.email }}</td>
+                <td>
+                  <v-btn rounded="xl" elevation="2" color="#65A7DB" variant="flat">View Detail</v-btn>
+                </td>
               </tr>
             </template>
           </v-data-table>
@@ -66,33 +79,26 @@
   </v-app>
 </template>
 
-<script>
-  export default{
-    data() {
-      return {
-        headers: [
-          { text: ' ', value: 'avatar' },
-          { text: 'Full Name', value: 'full_name' },
-          { text: 'Email', value: 'email' },
-        ],
-        users: [
-          { avatar: 'https://reqres.in/img/faces/1-image.jpg', full_name: 'Tom Cruise', email: 'george.bluth@regres.in' },
-          { avatar: 'https://reqres.in/img/faces/2-image.jpg', full_name: 'Matt Damon', email: 'janet.weaver@reqres.in' },
-          { avatar: 'https://reqres.in/img/faces/3-image.jpg', full_name: 'Chris Evans', email: 'charles.monis@regres.in' },
-          { avatar: 'https://reqres.in/img/faces/4-image.jpg', full_name: 'Christian Bale', email: 'tracey.ramos@regres.in' },
-        ],
-      }
-    },
-    methods: {
-      
-    },
-    head() {
-      return {
-        title: 'AOne School | Challenge',
-      }
-    }
-  }
+<script setup>
+  const axios = useNuxtApp().$axios;
+
+  const headers = [
+    { title: 'Avatar', align: 'start', key: 'avatar' },
+    { title: 'First Name', key: 'first_name' },
+    { title: 'Last Name', key: 'last_name' },
+    { title: 'Email', key: 'email' },
+  ];
+
+  let userList = ref([]);
+
+  onMounted(() => {
+    axios.get('http://127.0.0.1:8000/api/users').then((resp) => {
+      userList.value = resp.data;
+      console.log("🚀 ~ axios.get ~ this.userList:", userList)
+    })
+  })
 </script>
+
 
 <style scoped>
   .dark-theme-1{
@@ -103,40 +109,6 @@
     background-color: #4F4F4F;
     color: #ffffff
   }
-  .fab{
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
-  .fab-items{
-    z-index: 1;
-    transition: transform 0.3s ease;
-  }
-  .move-expand{
-    transform: translateX(120px);
-  }
-  .inbox-selected{
-    transform: translateX(20px)
-  }
-  .inbox-switch{
-    transform: translateX(-75px);
-  }
-  .task_selected{
-    transform: translateX(115px);
-  }
-  .inbox-container{
-    position: fixed;
-    bottom: 85px;
-    right: 20px;
-  }
-  .light-avatar{
-    background-color: #2F80ED;
-    border-radius: 100%;
-  }
-  .dark-avatar{
-    background-color: #E0E0E0;
-    border-radius: 100%;
-  }
   .profile-menu {
     display: flex;
     align-items: center;
@@ -144,79 +116,5 @@
   .header-title{
     font-weight: bold;
     font-size: 22px;
-  }
-  .item-title{
-    color:#2F80ED;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .item-person{
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .item-subject{
-    font-size: 12px;
-  }
-  .item-date{
-    font-size: 11px;
-  }
-  .chatroom-title{
-    color:#2F80ED;
-    font-weight: bold;
-    font-size: 16px;
-    flex: 1;
-    overflow-y: auto;
-  }
-  .chatroom-subtitle{
-    font-size: 10px;
-  }
-  .msg-container{
-    display: flex;
-    flex-direction: column;
-    margin-left: 30px;
-    margin-right: 30px;
-    margin-top: -500px;
-  }
-  .other-msg-item{
-    background-color: #FCEED3;
-    min-width: 250px; 
-    max-width: 500px;
-    width: fit-content;
-    border-radius: 4%;
-    padding: 15px;
-  }
-  .my-msg-item{
-    background-color: #EEDCFF;
-    min-width: 250px; 
-    max-width: 380px;
-    width: fit-content;
-    border-radius: 4%;
-    padding: 15px;
-    margin-bottom: 20px;
-    align-self: flex-end;
-  }
-  .msg-field{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    margin-left: 15px;
-    width: 700px; 
-    display: flex; 
-    align-items: stretch;
-  }
-  .type-field{
-    width: 100%;
-  }
-  .send-button{
-    margin-left: 10px;
-    height: 55px;
-  }
-  .msg-content{
-    font-size: 14px;
-  }
-  .msg-time{
-    font-size: 12px;
-    margin-top:15px;
   }
 </style>
