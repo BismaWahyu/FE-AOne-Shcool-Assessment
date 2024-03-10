@@ -9,13 +9,13 @@
         />
         
         <v-list dense>
-          <v-list-item style="cursor: pointer;">
+          <v-list-item style="cursor: pointer;" :class="{ active: pageTitle === 'About' }" @click="switchPage">
             <v-list-item-icon class="mr-2">
               <v-icon>mdi-information</v-icon>
             </v-list-item-icon>
             <v-list-item-content>About</v-list-item-content>
           </v-list-item>
-          <v-list-item style="cursor: pointer;">
+          <v-list-item style="cursor: pointer;" :class="{ active: pageTitle === 'Users' }" @click="switchPage">
             <v-list-item-icon class="mr-2">
               <v-icon>mdi-account-group</v-icon>
             </v-list-item-icon>
@@ -28,7 +28,7 @@
     <v-app-bar app>
       <v-container class="d-flex justify-space-between">
         <div>
-          <span class="header-title">Users</span>
+          <span class="header-title">{{ pageTitle }}</span>
         </div>
         <div class="profile-menu">
           <span class="mr-3">Jones Ferdinand</span>
@@ -40,7 +40,7 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container v-if="pageTitle === 'Users'">
         <v-card v-if="userDetail === null" title="All Users">
           <v-skeleton-loader :loading="isList" type="table">
             <v-data-table
@@ -121,6 +121,27 @@
           Back
         </v-btn>
       </v-container>
+
+      <v-container v-if="pageTitle === 'About'">
+        <v-card class="d-flex px-5 py-3">
+          <div>
+            <h2>Lorem ipsum dolor sit amet</h2>
+            <p class="mb-8">
+              consectetur adipiscing elit. Nulla vel turpis turpis. Sed mauris mauris, aliquam sed ante ut, ullamcorper laoreet erat. Duis eu rutrum purus. Ut luctus bibendum tellus ut congue. Ut dolor nisi, maximus aliquam nulla sed, venenatis consequat arcu. Nulla hendrerit vehicula arcu. In consectetur, purus sed consequat posuere, orci nunc consequat ipsum, ut sodales urna massa at neque. 
+            </p>
+            <p>
+              Nulla eget tellus sodales, venenatis lacus eget, lobortis libero. Cras scelerisque metus non mi condimentum, ac lacinia enim fermentum. Sed arcu tortor, hendrerit a eros ac, eleifend porta enim. Suspendisse molestie enim quam, a maximus massa faucibus nec. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer tortor odio, iaculis eget lobortis iaculis, tempor nec ante. Aliquam venenatis nisl at ipsum commod
+            </p>
+          </div>
+          <div>
+            <v-img 
+              src="/assets/about.png" 
+              width="500" 
+              class="ml-4"
+            />
+          </div>
+        </v-card>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -135,6 +156,7 @@
     { title: 'Email', key: 'email' },
   ];
 
+  let pageTitle = ref("Users");
   let isList = ref(false);
 
   let userList = ref([]);
@@ -159,6 +181,16 @@
   const backToList = () => {
     getUserList();
     userDetail.value = null;
+  }
+
+  const switchPage = () => {
+    if(pageTitle.value === "Users"){
+      pageTitle.value = "About";
+    }else if(pageTitle.value === "About"){
+      pageTitle.value = "Users";
+      getUserList();
+      userDetail.value = null;
+    }
   }
 
   onMounted(() => {
@@ -187,5 +219,13 @@
   .label-title{
     font-weight: bold;
     font-size: 21;
+  }
+  .active{
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  h2{
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
   }
 </style>
